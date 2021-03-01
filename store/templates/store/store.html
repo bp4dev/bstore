@@ -11,7 +11,7 @@
             <hr>
 
 <!--inline-block;-->
-		<button  class="btn btn-outline-secondary add-btn"> Add to Cart</button>
+		<button data-product={{Product.id}} data-action="add" class="btn btn-outline-secondary add-btn update-cart"> Add to Cart</button>
 		<a class="btn btn-outline-success" href="#">View</a>
 		<h4 style="display: block; float:right"><strong>{{Product.price|floatformat:2}}</strong></h4>
         </div>
