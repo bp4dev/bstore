@@ -28,11 +28,11 @@ def cookieCart(request):
 
             item = {
                 'product':{
-                'id':product.id,
-                'name':product.name,
-                'price':product.price,
-                'imageURL':product.imageURL,
-                },
+                    'id':product.id,
+                    'name':product.name,
+                    'price':product.price,
+                    'imageURL':product.imageURL,
+                    },
                 'quantity':cart[i]['quantity'],
                 'get_total':total,
                 }
@@ -40,7 +40,52 @@ def cookieCart(request):
 
             #shipping info
             if product.digital == False:
-                order['Shipping'] = True   
+                order['shipping'] = True   
         except:
             pass 
     return{'cartItems' :cartItems, 'order':order, 'items':items}
+
+def cartData(request):
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
+    return{'cartItems' :cartItems, 'order':order, 'items':items}
+
+def guestOrder(request, data):
+    print('User is not logged in...')
+    #creating guest user and their order in db
+    print('COOKIES:', request.COOKIES)
+    name = data['form']['name']
+    email = data ['form']['email']
+
+    cookieData = cookieCart(request)
+    items = cookieData['items']
+    #create email of Guest_user (once if they use same email)
+    customer, created = Customer.objects.get_or_create(
+        email=email,
+    )
+    customer.name = name
+    customer.save()
+
+    order = Order.objects.create(
+        customer=customer,
+        complete=False,
+        )
+    
+    for item in items:
+        product = Product.objects.get(id=item['product']['id'])
+
+        orderItem = OrderItem.objects.create(
+            product=product,
+            order = order,
+            quantity=item['quantity']
+        )
+
+    return customer, order

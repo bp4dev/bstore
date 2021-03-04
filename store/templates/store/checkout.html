@@ -68,7 +68,7 @@
 <script type="text/javascript">
     var shipping = '{{order.shipping}}'
     var total = '{{order.get_cart_total}}'
-
+    // item digital == hide shipping info
     if (shipping == 'False'){
         document.getElementById('shipping-info').innerHTML = ''
     }
@@ -86,7 +86,7 @@
     var form = document.getElementById('form')
 
     csrftoken = form.getElementsByTagName("input")[0].value
-
+    //open payment when form is submited 
     form.addEventListener('submit', function(e){
         e.preventDefault()
         console.log('Form submitted...')
@@ -99,6 +99,7 @@
     })
 
     function submitFormData(){
+        console.log('Payment button clicked')
 
         var userFormData = {
             'name':null,
@@ -119,27 +120,33 @@
             shippingInfo.county = form.county.value
             shippingInfo.zipcode = form.zipcode.value
         }
-        if(user == 'AnonymousUser'){
-            userFormData.name = form.name.value
+
+        if (user =='AnonymousUser'){
+            userFormData.name= form.name.value
             userFormData.email = form.email.value
+            
         }
 
         var url = '/process_order/'
-        fetch(url, {
+        fetch(url,{
             method:'POST',
             headers:{
-                'Content-Type':'application/json',
-                'X-CSRFToken':csrftoken,
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : csrftoken,
             },
-            body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
+            body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo})
         })
         .then((response) => response.json())
         .then((data) => {
             console.log('Sucess:', data);
             alert('Transaction completed');
+
+            cart = {}
+            document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
             window.location.href = "{% url 'store' %}"
         })
     }
 
 </script>
+
 {% endblock %}
