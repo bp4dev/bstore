@@ -14,8 +14,8 @@ class Customer(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=200, null=True)
-    price = models.DecimalField(decimal_places=2, max_digits=10)
     digital = models.BooleanField(default=False, null=True, blank=False)
+    price = models.FloatField()
     image = models.ImageField(null=True, blank=True)
 
     def _str_(self):
@@ -75,7 +75,7 @@ class ShippingAddress(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
     address = models.CharField(max_length=200, null=False)
-    city    =   models.CharField(max_length=100, null=False)
+    city    = models.CharField(max_length=100, null=False)
     county = models.CharField(max_length=100, null=False)
     zipcode = models.CharField(max_length=100, null=False)
     date_added = models.DateTimeField(auto_now_add=True)
